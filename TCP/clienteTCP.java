@@ -3,32 +3,35 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class clienteTCP {
     public static void main(String[] args) {
-       try {
-        //Crear un socket para conectarme al servidor
-        //Socket socket_cliente = new Socket("localhost", 1234);
-        Socket socket_cliente = new Socket("172.29.39.160", 3000);
+        try (Socket socket_cliente = new Socket("172.29.39.160", 3000);
+             BufferedReader buffer_entrada = new BufferedReader(new InputStreamReader(socket_cliente.getInputStream()));
+             PrintWriter buffer_salida = new PrintWriter(socket_cliente.getOutputStream(), true);
+             Scanner scanner = new Scanner(System.in)) {
 
-        //Crear los buffers para enviar y recibir los datos
+            String mensaje;
+            while (true) {
+                System.out.print("Escribe tu mensaje: ");
+                mensaje = scanner.nextLine();
+                buffer_salida.println(mensaje);
 
-        BufferedReader buffer_entrada = new BufferedReader(new InputStreamReader(socket_cliente.getInputStream()));
-        PrintWriter buffer_salida = new PrintWriter(socket_cliente.getOutputStream(), true);
-         
-        //Enviar Mensaje
-        String mensaje_enviar="Hola soy el cliente";
-        buffer_salida.println(mensaje_enviar);
+                // Recibir respuesta del servidor
+                String respuesta = buffer_entrada.readLine();
+                System.out.println("Servidor: " + respuesta);
 
-        //Extraer Mensaje
-        String mensaje_recibido=buffer_entrada.readLine();
-        System.out.println(mensaje_recibido);
-
-       } catch (IOException e) {
-        //TODO Auto-generated catch block
-        e.printStackTrace();
-
-       }
+                // Preguntar si desea enviar otro mensaje
+                System.out.print("¿Deseas enviar otro mensaje? (sí/no): ");
+                String continuar = scanner.nextLine();
+                buffer_salida.println(continuar);
+                if (continuar.equalsIgnoreCase("no")) {
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    
 }

@@ -3,46 +3,43 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.List;
 
-public class hiloClienteServ extends  Thread {
-
-    //Atributo para el cliente
+public class hiloClienteServ extends Thread {
     private Socket socket_cliente;
-    private List<String> preguntas = List.of(
-        "¿Ayudame con tu código unico de la EPN",
-        "¿Quien es tu docente en la Materia de Aplicaciones Distribuidas?"
-        
-    );
-    private List<String> respuestas_correctas = List.of(
-        "345687",
-        "Vanessa Guevara"
 
-    );
-
-
-    public hiloClienteServ(Socket socket_cliente){
-        this.socket_cliente=socket_cliente;
-
+    public hiloClienteServ(Socket socket_cliente) {
+        this.socket_cliente = socket_cliente;
     }
-    public void run(){
-        //Crear los buffers para enviar y recibir los datos
-        try(BufferedReader buffer_entrada = new BufferedReader(new InputStreamReader(socket_cliente.getInputStream()));
-        PrintWriter buffer_salida = new PrintWriter(socket_cliente.getOutputStream(), true);) {
-            for (int i=0)
-            
-            //Enviar mensaje
-            String mensaje_enviar="Hola soy el servidor";
-            buffer_salida.println(mensaje_enviar);
 
-            //Cargar Mensaje
-            String mensaje_recibido=buffer_entrada.readLine();
-            System.out.println(mensaje_recibido);
+    public void run() {
+        try (BufferedReader buffer_entrada = new BufferedReader(new InputStreamReader(socket_cliente.getInputStream()));
+             PrintWriter buffer_salida = new PrintWriter(socket_cliente.getOutputStream(), true)) {
+
+            String mensaje_recibido;
+            while ((mensaje_recibido = buffer_entrada.readLine()) != null) {
+                System.out.println("Cliente: " + mensaje_recibido);
+
+                // Responder al cliente
+                String respuesta = "Hola, recibí tu mensaje: " + mensaje_recibido;
+                buffer_salida.println(respuesta);
+
+                // Preguntar si el cliente quiere seguir
+                // buffer_salida.println("¿Deseas enviar otro mensaje? (sí/no)");
+                String continuar = buffer_entrada.readLine();
+                if (continuar.equalsIgnoreCase("exit")) {
+                    System.out.println("El cliente ha cerrado la conexión.");
+                    break;
+                }
+            }
 
         } catch (IOException e) {
-            //TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            try {
+                socket_cliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
-    
 }
