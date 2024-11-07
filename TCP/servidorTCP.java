@@ -11,10 +11,10 @@ public class servidorTCP {
                 Socket socket_cliente = serverSocket.accept();
                 System.out.println("Cliente conectado: " + socket_cliente.getInetAddress());
 
+                // Crear un nuevo hilo para manejar la comunicación con el cliente
                 hiloClienteServ hilo = new hiloClienteServ(socket_cliente);
                 hilo.start();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

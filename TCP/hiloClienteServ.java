@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class hiloClienteServ extends Thread {
     private Socket socket_cliente;
@@ -13,26 +14,43 @@ public class hiloClienteServ extends Thread {
 
     public void run() {
         try (BufferedReader buffer_entrada = new BufferedReader(new InputStreamReader(socket_cliente.getInputStream()));
-             PrintWriter buffer_salida = new PrintWriter(socket_cliente.getOutputStream(), true)) {
+             PrintWriter buffer_salida = new PrintWriter(socket_cliente.getOutputStream(), true);
+             Scanner scanner = new Scanner(System.in)) {
 
-            String mensaje_recibido;
-            while ((mensaje_recibido = buffer_entrada.readLine()) != null) {
-                System.out.println("Cliente: " + mensaje_recibido);
+            // Hilo para escuchar mensajes del cliente
+            Thread recibirMensajes = new Thread(() -> {
+                try {
+                    String mensaje_recibido;
+                    while ((mensaje_recibido = buffer_entrada.readLine()) != null) {
+                        System.out.println("Cliente: " + mensaje_recibido);
+                        if (mensaje_recibido.equalsIgnoreCase("exit")) {
+                            System.out.println("El cliente ha cerrado la conexión.");
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
 
-                // Responder al cliente
-                String respuesta = "Hola, recibí tu mensaje: " + mensaje_recibido;
-                buffer_salida.println(respuesta);
+            recibirMensajes.start();
 
-                // Preguntar si el cliente quiere seguir
-                // buffer_salida.println("¿Deseas enviar otro mensaje? (sí/no)");
-                String continuar = buffer_entrada.readLine();
-                if (continuar.equalsIgnoreCase("exit")) {
-                    System.out.println("El cliente ha cerrado la conexión.");
+            // Enviar mensajes al cliente
+            String mensaje_servidor;
+            while (true) {
+                System.out.print("Escribe tu respuesta para el cliente (o 'exit' para salir): ");
+                mensaje_servidor = scanner.nextLine();
+                buffer_salida.println(mensaje_servidor);
+
+                if (mensaje_servidor.equalsIgnoreCase("exit")) {
+                    System.out.println("Cerrando conexión con el cliente...");
                     break;
                 }
             }
 
-        } catch (IOException e) {
+            recibirMensajes.join();
+
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             try {
