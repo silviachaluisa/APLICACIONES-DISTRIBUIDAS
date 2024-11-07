@@ -22,7 +22,6 @@ public class clienteTCP {
                     System.out.println("Cerrando conexión con el servidor...");
                     break;
                 }
-
                 // Recibir respuesta del servidor
                 String respuesta = buffer_entrada.readLine();
                 if (respuesta == null) {
