@@ -1,0 +1,23 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx12
+    ports:
+     - 8081:80
+
+  apache:
+    image: httpd:latest
+    container_name: apache12
+    ports:
+     - 8082:80
+     
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin12
+    ports:
+     - 8083:80
+  #   environment:
+  #    - PMA_ARBITRARY=1
+  #    - PMA_HOST=
+  # servidor1:
