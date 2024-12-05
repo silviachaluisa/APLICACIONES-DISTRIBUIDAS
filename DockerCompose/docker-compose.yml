@@ -36,7 +36,10 @@ services:
     container_name: servidor2
     ports:
      - 8085:5003  
- 
+    volumes:
+    # Ruta del host:Ruta del contenedor
+      - ./datos:/app/data 
+
   servidor3:
     build:
       context: ./servidor3
@@ -44,4 +47,7 @@ services:
     container_name: servidor3
     ports:
      - 8086:5004  
+
+volumes:
+  datos:      
  
