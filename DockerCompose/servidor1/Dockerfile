@@ -14,4 +14,4 @@ RUN pip install Flask
 EXPOSE 5002
 
 # Ejecutar el servidor
-CMD ["python", "servidor.py"]
+CMD ["python", "app1.py"]
