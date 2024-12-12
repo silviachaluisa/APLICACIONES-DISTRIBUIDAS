@@ -1,0 +1,38 @@
+services:
+  # Nodo Maestro 1
+  mysql-master-1:
+    image: mysql:8.0
+    container_name: mysql-master-1
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root1
+      MYSQL_DATABASE: testdb1
+      MYSQL_REPLICATION_USER: user
+      MYSQL_REPLICATION_PASSWORD: password
+    command: --server-id=1 --log-bin=mysql-bin --binlog-do-db=testdb1
+
+
+  # Nodo Maestro 2
+  mysql-master-2:
+    image: mysql:8.0
+    container_name: mysql-master-2
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root1
+      MYSQL_DATABASE: testdb1
+      MYSQL_REPLICATION_USER: user
+      MYSQL_REPLICATION_PASSWORD: password
+    command: --server-id=2 --log-bin=mysql-bin --binlog-do-db=testdb1
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql-master-1, mysql-master-2
+      PMA_ARBITRARY: 1
+     
