@@ -1,66 +1,31 @@
-version: '3.8'
-
+version: '3'
 services:
-  mysql-master-1:
-    image: mysql:8.0
-    container_name: mysql-master-1
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root1
-      MYSQL_DATABASE: testdb1
-      MYSQL_REPLICATION_USER: repl_user
-      MYSQL_REPLICATION_PASSWORD: repl_password
-    command: >
-      --server-id=1
-      --log-bin=mysql-bin
-      --binlog-do-db=testdb1
-      --gtid_mode=ON
-      --enforce-gtid-consistency=ON
-      --master-info-repository=TABLE
-      --relay-log-info-repository=TABLE
-      --log-slave-updates=ON
-      --skip-slave-start
-    networks:
-      - mysql_cluster
 
-  mysql-master-2:
+  mysql-master1:
     image: mysql:8.0
-    container_name: mysql-master-2
+    container_name: mysql_maestro1
     ports:
-      - "3307:3306"
+      - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: root2
-      MYSQL_DATABASE: testdb1
-      MYSQL_REPLICATION_USER: repl_user
-      MYSQL_REPLICATION_PASSWORD: repl_password
-    command: >
-      --server-id=2
-      --log-bin=mysql-bin
-      --binlog-do-db=testdb1
-      --gtid_mode=ON
-      --enforce-gtid-consistency=ON
-      --master-info-repository=TABLE
-      --relay-log-info-repository=TABLE
-      --log-slave-updates=ON
-      --skip-slave-start
-    networks:
-      - mysql_cluster
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=replica
+    command: --server-id=1 --log-bin=mysql-bin --binlog-do-db=replica
+
+  mysql-master2:
+    image: mysql:8.0
+    container_name: mysql_maestro2
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=replica
+    command: --server-id=2 --log-bin=mysql-bin --binlog-do-db=replica
 
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: phpmyadmin
+    container_name: phpmyadmin_m
     ports:
-      - "8080:80"
+      - 8081:80
     environment:
-      PMA_HOSTS: mysql-master-1,mysql-master-2
-      PMA_ARBITRARY: 1
-    depends_on:
-      - mysql-master-1
-      - mysql-master-2
-    networks:
-      - mysql_cluster
-
-networks:
-  mysql_cluster:
-    driver: bridge
+      - PMA_HOSTS="mysql-master1,mysql-master2"
+      - PMA_ARBITRARY=1

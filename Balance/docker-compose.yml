@@ -1,0 +1,32 @@
+
+services:
+  servidor1:
+    build: 
+      context: /Servidor1  #Nombre de la carpeta
+      dockerfile: Dockerfile
+    container_name: servidor1
+    ports:
+      - 5001:5000  
+
+  servidor2:
+    build: 
+      context: /Servidor2  #Nombre de la carpeta
+      dockerfile: Dockerfile
+    container_name: servidor2
+    ports:
+      - 5002:5000
+
+  servidor3:
+    build: 
+      context: /Servidor3  #Nombre de la carpeta
+      dockerfile: Dockerfile
+    container_name: servidor3
+    ports:
+      - 5003:5000
+  nginx:
+    build: 
+      context: /nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - 8080:80  
