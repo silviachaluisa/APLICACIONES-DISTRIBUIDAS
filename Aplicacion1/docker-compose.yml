@@ -1,0 +1,80 @@
+
+
+# services:
+#   aplicacionpython:
+#     container_name: aplicacionPython
+#     build: 
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "5000:5000"
+#     environment:
+#       - MYSQL_HOST=db_master
+#       - MYSQL_USER=root
+#       - MYSQL_PASSWORD=root
+#       - MYSQL_DB=db_informacion
+#       - MYSQL_PORT=3306  
+
+#   db_master:
+#     image: mysql:8.0
+#     container_name: mysql_Master1
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: db_informacion
+#     ports:
+#       - "3306:3306" 
+
+#   phpmyadmin:
+#     image: phpmyadmin/phpmyadmin:latest
+#     container_name: PhpmyadmiN
+#     environment:
+#       - PMA_HOSTS:"db_master,db1"
+#       - PMA_ARBITRARY:1
+#     ports:
+#       - "8080:80"
+
+services:
+  aplicacion_python:
+    container_name: aplicacion_python
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - MYSQL_HOST=aplicacion_mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=1234
+      - MYSQL_DB=aplicacion
+      - MYSQL_PORT=3306
+    depends_on:
+      - aplicacion_mysql
+
+  aplicacion_mysql:
+    image: mysql:8.0
+    container_name: aplicacion_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=aplicacion
+
+  aplicacion_php:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: aplicacion_php
+    ports:
+      - "80:80"
+    environment:
+      - PMA_HOST=aplicacion_mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=1234
+      - PMA_ARBITRARY=1
+  locust:
+    image: locustio/locust:latest
+    container_name: LOCUST1
+    ports:
+      - 8089:8089
+    volumes:
+      - C:\Users\APP DISTRIBUIDAS\Documents\Github\APLICACIONES-DISTRIBUIDAS\Aplicacion1:/mnt/locust
+    command: ["-f", "/mnt/locust/locustfile.py" ]
+
