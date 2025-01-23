@@ -1,0 +1,5 @@
+"Hola"	1
+"el"	1
+"verde"	1
+"me"	1
+"gusta"	1
